@@ -1,0 +1,148 @@
+---
+title: "Post Interview Task"
+author: "Piyumi Pussalamankada"
+date: "16/02/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+    fig.path = "c/Users/piumi/MDesktop/Interview/Graduate_Analyst_Feb/excel_change" #make sure you create the folder first in Windows
+)
+```
+
+```{r}
+# Loading the libraries
+library(dplyr)
+library(glmnet)
+library(MASS)
+library(lubridate) # Library used for asDate
+#libraries for plotting 
+library(ggplot2)
+library(dplyr)
+#library(plotly)
+library(plotly, warn.conflicts = FALSE)
+#library(hrbrthemes)
+library(data.table)
+```
+
+```{r load Covid_data, include=FALSE}
+# Loading data
+covid_data_original <- read.csv("C:/Users/piumi/Desktop/Interview/Graduate_Analyst_Feb/Covid.csv")
+```
+
+```{r clean Covid_data, include=FALSE}
+
+# Removing N/A values from the dataframe
+covid_data_1 <- na.omit(covid_data_original)
+
+# Chnanging the parameter and data_last_updated as Date
+
+#covid_data_1$parameter <- as.Date(parse_date_time(covid_data_1$parameter,"dmy"))
+
+#covid_data_1$date_last_updated <- as.Date(parse_date_time(covid_data_1$date_last_updated,"dmy"))
+#str(covid_data_1)
+```
+
+### trend on weekly earning
+```{r weekly_earnings_trend, fig.cap="Figure 1: Trend on weekly earnings"}
+weekly_earnings <- covid_data_1 %>% filter(category == "Employment" & indicator_name == "Weekly median earnings (34 days)")
+#weekly_earnings <- weekly_earnings %>% mutate(Year = year(as.Date(weekly_earnings$parameter)))
+#is.na(weekly_earnings$parameter)
+
+# Chnanging the parameter and data_last_updated as Date
+
+weekly_earnings$parameter <- as.Date(parse_date_time(weekly_earnings$parameter,"dmy"))
+
+# omitting ., * in value column
+
+
+#weekly_earnings$parameter <- as.Date(parse_date_time(weekly_earnings$parameter, orders = "ymd"))
+#colnames(weekly_earnings)[4] <- "Category"
+
+#options(warnPartialMatchArgs = TRUE)
+weekly_data <- weekly_earnings %>%
+  filter(sub_series_name != "Total") %>%
+  select(parameter, value,sub_series_name) 
+
+
+p <- weekly_data %>%
+  ggplot(aes(x = parameter, y=value)) +
+  geom_line(aes(color = sub_series_name)) +
+  theme(plot.title = element_text(hjust = 0.5))+
+  scale_x_date(date_labels = "%Y-%b") +
+  xlab("Time") + ylab("Dollars") +ggtitle("Weekly earnings")
+p
+```
+### trend on job seeker support
+
+```{r jobseeker_trend, fig.cap="Figure 2: Trend on jobseekers"}
+
+jobseekers <- covid_data_1 %>% 
+  filter(category == "Benefits" & indicator_name == "Jobseeker support by region - weekly" & series_name == "Total") %>%
+  select(value, parameter)
+jobseekers$parameter <- as.Date(parse_date_time(jobseekers$parameter,"dmy"))
+
+#View(jobseekers)
+ 
+#jobseekers <- jobseekers %>% mutate(month = month(parameter))
+# %like% "Jobseeker support by region - weekly
+
+#jobseekers <- transform(jobseekers, MonthAbb = month.abb[month])
+
+#
+
+#max(parameter)
+p <- jobseekers %>%
+  ggplot(aes(x=parameter, y=value,group = 1)) +
+  geom_line() +
+  ylim(140000, 220000) +
+  theme(plot.title = element_text(hjust = 0.5))+
+  xlab("week") + ylab("Number of jobseekers support") +ggtitle("Total jobseekers support by region - weekly") +
+  scale_x_date(limits = as.Date(c(min(jobseekers$parameter),max(jobseekers$parameter))))
+p
+```
+
+
+
+```{r health_trend, fig.cap="Figure 3: Health"}
+health <- covid_data_1 %>% filter(class == "Health" & category == "Mental health" & sub_series_name == "Percentage of respondents")
+health <- health %>% mutate(month = month(parameter))
+health <- transform(health, month = month.abb[month]) 
+
+health_data <- health %>%
+   group_by(indicator_name, month) %>%
+   summarize(avg = mean(value)) 
+
+
+
+  # ggplot(health_data, aes(x="", y=avg, group=indicator_name, color=indicator_name, fill=indicator_name)) +
+  # geom_bar(width = 1, stat = "identity",position = 'fill') +
+  # coord_polar("y", start=0) + facet_wrap(~ month) +
+  # #geom_text(label=) +
+  # theme(axis.text = element_blank(),
+  #       axis.ticks = element_blank(),
+  #       panel.grid  = element_blank())
+  
+ 
+ 
+p <- ggplot(health_data, aes(fill=indicator_name, y=avg, x=month)) + 
+    geom_bar(position="stack", stat="identity") 
+  
+
+library(plotly)
+
+ggplotly(p)
+
+# ggplot(health_data, aes(x="", y=avg, group=month, color=month, fill=month)) +
+#   geom_bar(width = 1, stat = "identity",position = 'fill') +
+#   coord_polar("y", start=0) + facet_wrap(~ indicator_name) +
+#   theme(axis.text = element_blank(),
+#         axis.ticks = element_blank(),
+#         panel.grid  = element_blank())
+```
+
+
+
+
+
