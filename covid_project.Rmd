@@ -15,15 +15,10 @@ knitr::opts_chunk$set(echo = FALSE,warning = FALSE, message = FALSE, fig.showtex
 
 library(dplyr)
 library(glmnet)
-library(MASS)
-library(lubridate) # Library used for asDate
-#libraries for plotting 
+library(lubridate) 
 library(ggplot2)
 library(dplyr)
-#library(plotly)
 library(plotly, warn.conflicts = FALSE)
-#library(hrbrthemes)
-library(data.table)
 ```
 
 ```{r load Covid_data, include=FALSE}
@@ -33,42 +28,40 @@ covid_data_original <- read.csv("C:/Users/piumi/Desktop/Interview/Graduate_Analy
 
 ```{r clean Covid_data, include=FALSE}
 
-# Removing N/A values from the dataframe
+# Removing N/A values from the dataframe and creating a new dataframe to use for the below graphs
 covid_data_1 <- na.omit(covid_data_original)
-
-# Chnanging the parameter and data_last_updated as Date
-
-#covid_data_1$parameter <- as.Date(parse_date_time(covid_data_1$parameter,"dmy"))
-
-#covid_data_1$date_last_updated <- as.Date(parse_date_time(covid_data_1$date_last_updated,"dmy"))
-#str(covid_data_1)
 ```
 
 ### Introduction
 
-The Stats NZ covid-19 data portal presents observations across New Zealand to identify the impact of Covid-19 pandamic. These observations records economic, health, income support, and social aspects of COVID-19.There are 9 attributes in this data portal which includes factors, strings, and numbers.This report demonstrate the impact of Covid-19 on the wellbeing of New Zealanders.
+The Stats NZ covid-19 data portal presents observations across New Zealand to identify the impact of Covid-19 pandemic. These observations record economic, health, income support, and social aspects of COVID-19.There are 9 attributes in this data portal which includes factors, and numbers.This report demonstrates the impact of Covid-19 on the wellbeing of New Zealanders.
 
 
-Fisrtly, the downloaded dataset was observed to get an overall idea about the data types. Before going to do a further analysis, some changes had to be carried out to produce an accurate report.The rows with NA values were removed. Parameter column was initially a factor column. Type of this was changed to date format, when the time-series plots were introduced based on the parameter.
+<p>Firstly, the downloaded dataset was observed to get an overall idea about the data structure.The following data cleaning procedures were carried out to produce more reliable report.</p>
+1. The rows with NA values were removed
+2. Parameter column was initially a factor column. Data type of this was changed to date format, when the time-series plots were introduced based on the parameter.
 
-Wellbeing of people depends on many factors such as money, career,leisure persuits, and health. The attempt of this report was to produce how these wellbeing factors have changed during the Covid-19 pandamic. 
+Wellbeing of people depends on many factors such as money, career, leisure persuits, and health. The attempt of this report was to produce how these wellbeing factors have changed during the Covid-19 pandemic. 
 
-### Weekly median earnings impacted during the pandamic
+### Weekly median earnings impacted during the pandemic
 
 Money is one of the main factor that affects the wellbeing of people.
+
 ```{r weekly_earnings_trend, fig.cap="Figure 1: Trend on weekly median earnings"}
+
 weekly_earnings <- covid_data_1 %>% filter(category == "Employment" & indicator_name == "Weekly median earnings (34 days)")
 
 #is.na(weekly_earnings$parameter) 
 
-# Chnanging the parameter as Date
+# Changing the parameter as Date
 weekly_earnings$parameter <- as.Date(parse_date_time(weekly_earnings$parameter,"dmy"))
 
+# created a dataframe to show weekly median earnings of different series except for "total"
 weekly_data <- weekly_earnings %>%
   filter(sub_series_name != "Total") %>%
   select(parameter, value,sub_series_name) 
 
-
+#Plotting the time series chart
 p <- weekly_data %>%
   ggplot(aes(x = parameter, y=value)) +
   geom_line(aes(color = sub_series_name)) +
@@ -77,30 +70,28 @@ p <- weekly_data %>%
   xlab("Week") + ylab("Earnings in Dollars") +ggtitle("Weekly Medain Earnings")
 p
 ```
-The above graphs show the weekly medain earnings of Goods produced, primary and services over the weeks started from May 2019 to January 2021. Firstly, the graph of total weekly medain earning was showed in the same graph, but it was a suprise to see that it lied between the graph of goods producing and services. Therefore, the total weekly median earning graph was removed because it's unexceptable to see the graph in between. This may be due to the inproper recording of value or units. Either value should be high or units column should not only include $, instead it should have mentioned as thousands or other higher values. 
 
-As per the graph, the highest medain earning is gained by producing goods and the lowest is by services. Over the period all the three graphs fluctuate and have an increase trend except for the period March 2020- May 2020.In this period the weekly medain income from goods producing and services has dropped drastically while the primary has increased. It is clear that covid-19 has significantly affected the weekly median income from the goods producing.It has reached a minimum of less than $1000 which is way below their normal average. In this period the weekly median earnings has drastically decreased and remain constant for another few weeks and again it has gradually increased. This may be due to this pandamic and the restrictions posed by the government such as distance rule.
+<p>The above graphs show the weekly median earnings of goods produced, primary and services over the weeks started from May 2019 to January 2021. Firstly, the graph of total weekly median earning was showed in the same graph, but it was a suprise to see that it lied between the graph of goods producing and services. Therefore, **the total weekly median earning graph was removed** because it's unexceptable to see the graph in between. This may be due to:</p>
+1. The inproper recording of value 
+eg: The values for total should have mentioned in higher values like thousands.
+2. The inproper recording of units. 
+eg: Units column should not only include $, instead it should have mentioned as thousands or other higher values.
 
-### The impact on jobseeker support for New Zealenders
-Having a stable career is an important factor that impact on the wellbeing of people.As per the reports we are awrare that many New Zealanders lost their jobs due to this pandamic and many graduates are in a hard situation to find jobs. If those people get any suport to find a job in a situation like this, it will motivate for them to lead a healthier life style. 
+<p>As per the graph, the highest medain earning is gained by producing goods and the lowest is by services. Over the period *all the three graphs fluctuate and have an increase trend except for the period March 2020- May 2020*. In this period the *weekly medain income from goods producing and services has dropped drastically while the primary has increased.* It is clear that covid-19 has significantly affected the weekly median income from the goods producing.It has reached a minimum of less than $1000 which is way below their normal average. In this period the weekly median earnings of services had drastically decreased and remain constant for another few weeks and again it has gradually increased. This may be due to this pandemic and the restrictions posed by the government.</p>
+
+### The impact on jobseekers support for New Zealenders
+Having a stable career is an important factor that impact on the wellbeing of people. As per the reports, we are awrare that many New Zealanders lost their jobs due to this pandemic and many graduates are in a hard situation to find jobs. If those people get any suport to find a job in a situation like this, it will motivate for them to lead a healthier life style. 
 
 ```{r jobseeker_trend, fig.cap="Figure 2: Trend on jobseeker suport"}
 
 jobseekers <- covid_data_1 %>% 
   filter(category == "Benefits" & indicator_name == "Jobseeker support by region - weekly" & series_name == "Total") %>%
   select(value, parameter)
+
+#Changing the parameter as Date format
 jobseekers$parameter <- as.Date(parse_date_time(jobseekers$parameter,"dmy"))
 
-#View(jobseekers)
- 
-#jobseekers <- jobseekers %>% mutate(month = month(parameter))
-# %like% "Jobseeker support by region - weekly
-
-#jobseekers <- transform(jobseekers, MonthAbb = month.abb[month])
-
-#
-
-#max(parameter)
+#Plotting the time series
 p <- jobseekers %>%
   ggplot(aes(x=parameter, y=value,group = 1)) +
   geom_line() +
@@ -111,56 +102,44 @@ p <- jobseekers %>%
 p
 ```
 
-According to the trend of jobseekers support there is a decrease over the period January 2020 to March 2020. It is good to see that during the pandamic there is an accelerated growth for the support of jobseekers. This may reduce the stress of New Zealanders as they feel confortable of the process of finding a job. After June 2020 there can be seen some fluctuations but overall trend is upward. 
+According to the trend of jobseekers support, there is a *decrease over the period January 2020 to March 2020*. It is good to see that **during the pandemic there is an accelerated growth for the support of jobseekers**. This may reduce the stress of New Zealanders as they feel comfortable of the process of finding a job. *After June 2020 there can be seen some fluctuations but overall trend is upward*. 
 
 ### The impact on mental health of New Zealanders
 
-Identifying the factors that affect the mental health of people is cruicial to find the ways to cure or minimize it because it affects people by various ways such as low performance of work, and family troubles.
+Identifying the factors that affect the mental health of people is crucial to find the ways to cure or minimize it because it affects people by various ways such as low performance of work, and family troubles.
 
 ```{r mental_health_trend, fig.cap="Figure 3: Stacked bar chart of mental health of New Zealanders"}
+
 health <- covid_data_1 %>% filter(class == "Health" & category == "Mental health" & sub_series_name == "Percentage of respondents")
+
+# Adding a new column to the dataframe to have the months abbreviations
 health <- health %>% mutate(month = month(parameter))
 health <- transform(health, month = month.abb[month]) 
 
+# For each month there were 4 recordings and mean was calculated to summarize the data
 health_data <- health %>%
    group_by(indicator_name, month) %>%
    summarize(avg = mean(value)) 
-
-
-
-  # ggplot(health_data, aes(x="", y=avg, group=indicator_name, color=indicator_name, fill=indicator_name)) +
-  # geom_bar(width = 1, stat = "identity",position = 'fill') +
-  # coord_polar("y", start=0) + facet_wrap(~ month) +
-  # #geom_text(label=) +
-  # theme(axis.text = element_blank(),
-  #       axis.ticks = element_blank(),
-  #       panel.grid  = element_blank())
   
- 
- 
+# Plotting the stacked bar chart
 p <- ggplot(health_data, aes(fill=indicator_name, y=avg, x=month))+
   ggtitle("The mental health of New Zealanders")+
   labs(y="Average percentage of respondents", x = "Months")+
+  scale_x_discrete(limits = c("Apr","May", "Jun", "Jul", "Aug","Sep")) +
     geom_bar(position="stack", stat="identity") 
-  
 
-library(plotly)
 
 ggplotly(p)
 
-# ggplot(health_data, aes(x="", y=avg, group=month, color=month, fill=month)) +
-#   geom_bar(width = 1, stat = "identity",position = 'fill') +
-#   coord_polar("y", start=0) + facet_wrap(~ indicator_name) +
-#   theme(axis.text = element_blank(),
-#         axis.ticks = element_blank(),
-#         panel.grid  = element_blank())
 ```
 
-The above stacked bar chart shows the average percentage of respondents to their mental health during the year 2020. The calmness is the highly affected mental health issue in the society and it seems to be constant throughout the year. The highest percentage of people who were worrying about the family health, nervousness, stress about leaving the family and depression/anxiety can be seen in the month of April.  
+The above stacked bar chart shows the average percentage of respondents to their mental health during the year 2020. The *calmness in the society seems to be constant throughout the year*. The *highest percentage of people who were worrying about the family health, nervousness, stress about leaving the family and depression/anxiety can be seen in the month of April*. This may be due to the lockdown period. There is a gradual decrease in nervousness till June and again gradual increase till September. Stress about leaving the home has decreased over the period April to July 2020 but seems to be little higher and constant in the months of August and September. Depression / anxiety has gradually decreased. 
 
 ### The impact on daily border crossings
-Traveling is another indicator focussed to identify the pattern of New Zealanders travels before nd after the Covid-19 pandamic.
-```{r travel_trend, fig.cap="Figure 4: Daily boarder crossings - arrivals & departures"}
+
+Traveling is another indicator focussed to identify the pattern of New Zealanders travels before and after the Covid-19 pandemic.
+
+```{r travel_trend, fig.cap="Figure 4: Daily border crossings - arrivals & departures"}
 
 
 travel_data <- covid_data_1 %>% filter(category == "Travel" & (indicator_name == "Daily border crossings - arrivals" | indicator_name == "Daily border crossings - departures") & series_name == "New Zealand passport")
@@ -168,16 +147,19 @@ travel_data <- covid_data_1 %>% filter(category == "Travel" & (indicator_name ==
  #Channging the parameter as Date
 travel_data$parameter <- as.Date(parse_date_time(travel_data$parameter,"dmy"))
 
+#Plotting the graph
 p <- travel_data %>%
   ggplot(aes(x = parameter, y=value)) +
   geom_line(aes(color = indicator_name)) +
   theme(plot.title = element_text(hjust = 0.5))+
   scale_x_date(date_labels = "%Y-%b") +
   xlab("date") + ylab("Number") +ggtitle("Daily border crossings of New Zealanders")
-p
-
+ggplotly(p)
 ```
-The above graphs show how New Zealanders crosses border daily over the years starting from 2016.  According to the graphs, both departures and arrivals have the same pattern of trend and there can be seen a seasonal pattern within each year. A sudden decrease of travels can be observed in the first quarter of 2020 and it continued to be low as never happpened before. The covid-19 has a huge impact over the border crossings of New Zealanders.
+The above graphs show the daily travels of New Zealanders crosses borders over the years starting from 2016.  According to the graphs, both departures and arrivals have the same pattern and there can be seen a *seasonal pattern* within each year. A **sudden decrease of travels can be observed in the first quarter of 2020** and it continued to be low as never happpened before. The covid-19 has a huge impact over the border crossings of New Zealanders.
+
+### Summary 
+Economic, health, career, and travel are the factors that were considered in this report to analyse the impact over the wellbeing of New Zealanders. Overall, covid-19 has negatively impacted on the mental health, weekly median earnings, and travels of New Zealanders. Jobseekers support has increased during this pandemic which can be described as a positive impact on the New Zealanders' wellbeing as they feel there is someone to help when they are in need of help.
 
 
 
