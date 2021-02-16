@@ -1,5 +1,5 @@
 ---
-title: "Post Interview Task"
+title: "Post Interview Task - The impact of COVID-19 on the wellbeing of New Zealanders"
 author: "Piyumi Pussalamankada"
 date: "16/02/2021"
 output: html_document
@@ -12,7 +12,6 @@ knitr::opts_chunk$set(echo = FALSE,warning = FALSE, message = FALSE, fig.showtex
 
 ```{r}
 # Loading the libraries
-
 library(dplyr)
 library(glmnet)
 library(lubridate) 
@@ -27,7 +26,6 @@ covid_data_original <- read.csv("C:/Users/piumi/Desktop/Interview/Graduate_Analy
 ```
 
 ```{r clean Covid_data, include=FALSE}
-
 # Removing N/A values from the dataframe and creating a new dataframe to use for the below graphs
 covid_data_1 <- na.omit(covid_data_original)
 ```
@@ -38,7 +36,7 @@ The Stats NZ covid-19 data portal presents observations across New Zealand to id
 
 
 <p>Firstly, the downloaded dataset was observed to get an overall idea about the data structure.The following data cleaning procedures were carried out to produce more reliable report.</p>
-1. The rows with NA values were removed
+1. The rows with NA values were removed.
 2. Parameter column was initially a factor column. Data type of this was changed to date format, when the time-series plots were introduced based on the parameter.
 
 Wellbeing of people depends on many factors such as money, career, leisure persuits, and health. The attempt of this report was to produce how these wellbeing factors have changed during the Covid-19 pandemic. 
@@ -80,7 +78,7 @@ eg: Units column should not only include $, instead it should have mentioned as 
 <p>As per the graph, the highest medain earning is gained by producing goods and the lowest is by services. Over the period *all the three graphs fluctuate and have an increase trend except for the period March 2020- May 2020*. In this period the *weekly medain income from goods producing and services has dropped drastically while the primary has increased.* It is clear that covid-19 has significantly affected the weekly median income from the goods producing.It has reached a minimum of less than $1000 which is way below their normal average. In this period the weekly median earnings of services had drastically decreased and remain constant for another few weeks and again it has gradually increased. This may be due to this pandemic and the restrictions posed by the government.</p>
 
 ### The impact on jobseekers support for New Zealenders
-Having a stable career is an important factor that impact on the wellbeing of people. As per the reports, we are awrare that many New Zealanders lost their jobs due to this pandemic and many graduates are in a hard situation to find jobs. If those people get any suport to find a job in a situation like this, it will motivate for them to lead a healthier life style. 
+Having a stable career is an important factor that impact on the wellbeing of people. As per the reports, we are aware that many New Zealanders lost their jobs due to this pandemic and many graduates are in a hard situation to find jobs. If those people get any suport to find a job in a situation like this, it will motivate for them to lead a healthier life style. 
 
 ```{r jobseeker_trend, fig.cap="Figure 2: Trend on jobseeker suport"}
 
