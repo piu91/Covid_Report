@@ -63,7 +63,6 @@ weekly_data <- weekly_earnings %>%
 p <- weekly_data %>%
   ggplot(aes(x = parameter, y=value)) +
   geom_line(aes(color = sub_series_name)) +
-  #theme(text = element_text(size=20))+
   scale_x_date(date_labels = "%Y-%b") +
   xlab("Week") + ylab("Earnings in Dollars") +ggtitle("Weekly Median Earnings")
 ggplotly(p)
@@ -89,15 +88,11 @@ jobseekers <- covid_data_1 %>%
 #Changing the parameter as Date format
 jobseekers$parameter <- as.Date(parse_date_time(jobseekers$parameter,"dmy"))
 
-# converting the values to thousands
-#jobseekers$value <- (jobseekers$value/1000)
-
 #Plotting the time series
 p <- jobseekers %>%
   ggplot(aes(x=parameter, y=value,group = 1)) +
   geom_line() +
   ylim(140000, 220000) +
-  #theme(plot.title = element_text(hjust = 0.5), text = element_text(size=20))+
   xlab("week") + ylab("Number of jobseekers support (thousands)") +ggtitle("Total jobseekers support by region - weekly") +
   scale_x_date(limits = as.Date(c(min(jobseekers$parameter),max(jobseekers$parameter))))
 ggplotly(p)
