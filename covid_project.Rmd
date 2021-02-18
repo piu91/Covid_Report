@@ -1,7 +1,7 @@
 ---
 title: "Post Interview Task - The impact of COVID-19 on the wellbeing of New Zealanders"
 author: "Piyumi Pussalamankada"
-date: "16/02/2021"
+date: "18/02/2021"
 output: html_document
 ---
 
@@ -63,24 +63,24 @@ weekly_data <- weekly_earnings %>%
 p <- weekly_data %>%
   ggplot(aes(x = parameter, y=value)) +
   geom_line(aes(color = sub_series_name)) +
-  theme(plot.title = element_text(hjust = 0.5))+
+  #theme(text = element_text(size=20))+
   scale_x_date(date_labels = "%Y-%b") +
-  xlab("Week") + ylab("Earnings in Dollars") +ggtitle("Weekly Medain Earnings")
-p
+  xlab("Week") + ylab("Earnings in Dollars") +ggtitle("Weekly Median Earnings")
+ggplotly(p)
 ```
 
 <p>The above graphs show the weekly median earnings of goods produced, primary and services over the weeks started from May 2019 to January 2021. Firstly, the graph of total weekly median earning was showed in the same graph, but it was a suprise to see that it lied between the graph of goods producing and services. Therefore, **the total weekly median earning graph was removed** because it's unexceptable to see the graph in between. This may be due to:</p>
-1. The inproper recording of value 
+1. The inproper recording of value. 
 eg: The values for total should have mentioned in higher values like thousands.
 2. The inproper recording of units. 
 eg: Units column should not only include $, instead it should have mentioned as thousands or other higher values.
 
-<p>As per the graph, the highest medain earning is gained by producing goods and the lowest is by services. Over the period *all the three graphs fluctuate and have an increase trend except for the period March 2020- May 2020*. In this period the *weekly medain income from goods producing and services has dropped drastically while the primary has increased.* It is clear that covid-19 has significantly affected the weekly median income from the goods producing.It has reached a minimum of less than $1000 which is way below their normal average. In this period the weekly median earnings of services had drastically decreased and remain constant for another few weeks and again it has gradually increased. This may be due to this pandemic and the restrictions posed by the government.</p>
+<p>As per the graph, the highest median earning is gained by producing goods and the lowest is by services. Over the period *all the three graphs fluctuate and have an increase trend except for the period March 2020- May 2020*. In this period the *weekly medain income from goods producing and services has dropped drastically while the primary has increased.* It is clear that covid-19 has significantly affected the weekly median income from the goods producing.It has reached a minimum of less than $1000 which is way below their normal average. In this period the weekly median earnings of services had drastically decreased and remain constant for another few weeks and again it has gradually increased. This may be due to this pandemic and the restrictions posed by the government.</p>
 
 ### The impact on jobseekers support for New Zealenders
 Having a stable career is an important factor that impact on the wellbeing of people. As per the reports, we are aware that many New Zealanders lost their jobs due to this pandemic and many graduates are in a hard situation to find jobs. If those people get any suport to find a job in a situation like this, it will motivate for them to lead a healthier life style. 
 
-```{r jobseeker_trend, fig.cap="Figure 2: Trend on jobseeker suport"}
+```{r jobseeker_trend, fig.cap="Figure 2: Trend on jobseekers suport"}
 
 jobseekers <- covid_data_1 %>% 
   filter(category == "Benefits" & indicator_name == "Jobseeker support by region - weekly" & series_name == "Total") %>%
@@ -89,15 +89,18 @@ jobseekers <- covid_data_1 %>%
 #Changing the parameter as Date format
 jobseekers$parameter <- as.Date(parse_date_time(jobseekers$parameter,"dmy"))
 
+# converting the values to thousands
+#jobseekers$value <- (jobseekers$value/1000)
+
 #Plotting the time series
 p <- jobseekers %>%
   ggplot(aes(x=parameter, y=value,group = 1)) +
   geom_line() +
   ylim(140000, 220000) +
-  theme(plot.title = element_text(hjust = 0.5))+
-  xlab("week") + ylab("Number of jobseekers support") +ggtitle("Total jobseekers support by region - weekly") +
+  #theme(plot.title = element_text(hjust = 0.5), text = element_text(size=20))+
+  xlab("week") + ylab("Number of jobseekers support (thousands)") +ggtitle("Total jobseekers support by region - weekly") +
   scale_x_date(limits = as.Date(c(min(jobseekers$parameter),max(jobseekers$parameter))))
-p
+ggplotly(p)
 ```
 
 According to the trend of jobseekers support, there is a *decrease over the period January 2020 to March 2020*. It is good to see that **during the pandemic there is an accelerated growth for the support of jobseekers**. This may reduce the stress of New Zealanders as they feel comfortable of the process of finding a job. *After June 2020 there can be seen some fluctuations but overall trend is upward*. 
@@ -158,6 +161,8 @@ The above graphs show the daily travels of New Zealanders crosses borders over t
 
 ### Summary 
 Economic, health, career, and travel are the factors that were considered in this report to analyse the impact over the wellbeing of New Zealanders. Overall, covid-19 has negatively impacted on the mental health, weekly median earnings, and travels of New Zealanders. Jobseekers support has increased during this pandemic which can be described as a positive impact on the New Zealanders' wellbeing as they feel there is someone to help when they are in need of help.
+
+
 
 
 
